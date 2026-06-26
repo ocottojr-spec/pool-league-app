@@ -28,7 +28,7 @@
   <div style="display:flex; gap:10px; margin-bottom:15px;">
     <input 
       id="name" 
-      placeholder="Player name"
+      placeholder="Lag Winner"
       style="flex:1; padding:12px; font-size:16px;"
     />
     <button onclick="addPlayer()" style="padding:12px;">
@@ -56,3 +56,123 @@
     Send Scores via Text
   </button>
 
+  <script>
+    let players = [];
+
+    document.getElementById("gameDate").valueAsDate = new Date();
+
+    function addPlayer() {
+      const input = document.getElementById("name");
+      if (!input.value) return;
+
+      players.push({
+        name: input.value,
+        wins: 0,
+        eights: 0,
+        tableRuns: 0,
+        nineSnaps: 0,
+        threeFouls: 0
+      });
+
+      input.value = "";
+
+      // Change placeholder after first player
+      if (players.length === 1) {
+        input.placeholder = "Opponent";
+      }
+
+      render();
+    }
+
+    function addWin(index) {
+      players[index].wins++;
+      render();
+    }
+
+    function removeWin(index) {
+      if (players[index].wins > 0) {
+        players[index].wins--;
+        render();
+      }
+    }
+
+    function updateStat(index, field, value) {
+      players[index][field] = value;
+    }
+
+    function dropdownOptions(selectedValue) {
+      return [0,1,2,3,4,5,6,7,8,9].map(n => `
+        <option value="${n}" ${n == selectedValue ? "selected" : ""}>${n}</option>
+      `).join("");
+    }
+
+    function render() {
+      const container = document.getElementById("players");
+      container.innerHTML = "";
+
+      players.forEach((p, i) => {
+        container.innerHTML += `
+          <div style="
+            border:1px solid #444;
+            padding:15px;
+            margin-bottom:10px;
+            border-radius:5px;
+          ">
+
+            <div style="font-size:18px; margin-bottom:5px;">
+              <b>${p.name}</b>
+            </div>
+
+            <div style="margin-bottom:10px;">
+              Wins: ${p.wins}
+            </div>
+
+            <div style="display:flex; gap:5px; margin-bottom:10px;">
+              <button onclick="addWin(${i})">+ Win</button>
+              <button onclick="removeWin(${i})" style="background:#aa3333; color:white;">- Win</button>
+            </div>
+
+            <div>8 Snap:
+              <select onchange="updateStat(${i}, 'eights', this.value)">
+                ${dropdownOptions(p.eights)}
+              </select>
+            </div>
+
+            <div>Table Run:
+              <select onchange="updateStat(${i}, 'tableRuns', this.value)">
+                ${dropdownOptions(p.tableRuns)}
+              </select>
+            </div>
+
+            <div>9 Snap:
+              <select onchange="updateStat(${i}, 'nineSnaps', this.value)">
+                ${dropdownOptions(p.nineSnaps)}
+              </select>
+            </div>
+
+            <div>3 Foul:
+              <select onchange="updateStat(${i}, 'threeFouls', this.value)">
+                ${dropdownOptions(p.threeFouls)}
+              </select>
+            </div>
+
+          </div>
+        `;
+      });
+    }
+
+    function sendText() {
+      const date = document.getElementById("gameDate").value;
+
+      let text = "Game Date: " + date + "\\n\\n";
+
+      text += players.map(p => 
+        `${p.name} - Wins: ${p.wins} | 8 Snap: ${p.eights} | Table Run: ${p.tableRuns} | 9 Snap: ${p.nineSnaps} | 3 Foul: ${p.threeFouls}`
+      ).join("\\n");
+
+      window.location.href = `sms:+18608161642?body=${encodeURIComponent(text)}`;
+    }
+  </script>
+
+</body>
+</html>
