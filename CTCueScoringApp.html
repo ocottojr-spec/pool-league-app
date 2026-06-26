@@ -16,48 +16,34 @@
   color: white;
 ">
 
-  <!-- ✅ LOGO HEADER -->
-  <div style="text-align:center; margin-bottom:10px;">
-    <img 
-      src="logo.png" 
-      alt="Connecticut Cue Sports"
-      style="width:100%; max-width:300px;"
-    />
+  <!-- LOGO -->
+  <div style="text-align:center; margin-bottom:15px;">
+    <img src="logo.png" style="max-width:200px; width:100%;">
   </div>
 
-  <h2 style="text-align:center; margin-bottom:20px;">
-    Pool League Score Tracker
-  </h2>
+  <h2 style="text-align:center;">Pool League Score Tracker</h2>
 
-  <!-- ✅ INPUT AREA -->
+  <!-- DATE -->
+  <div style="margin-bottom:15px;">
+    <label>Game Date:</label>
+    <input type="date" id="gameDate" style="width:100%; padding:10px; margin-top:5px;">
+  </div>
+
+  <!-- ADD PLAYER -->
   <div style="display:flex; gap:10px; margin-bottom:15px;">
     <input 
       id="name" 
       placeholder="Player name"
-      style="
-        flex:1;
-        padding:12px;
-        font-size:16px;
-        border-radius:5px;
-        border:none;
-      "
+      style="flex:1; padding:12px; font-size:16px;"
     />
-    <button 
-      onclick="addPlayer()"
-      style="
-        padding:12px;
-        font-size:16px;
-        border:none;
-        border-radius:5px;
-      "
-    >
+    <button onclick="addPlayer()" style="padding:12px;">
       Add
     </button>
   </div>
 
   <div id="players"></div>
 
-  <!-- ✅ SEND BUTTON -->
+  <!-- SEND -->
   <button 
     onclick="sendText()"
     style="
@@ -69,3 +55,100 @@
       color:black;
       border:none;
       border-radius:5px;
+      font-weight:bold;
+    "
+  >
+    Send Scores via Text
+  </button>
+
+  <script>
+    let players = [];
+
+    document.getElementById("gameDate").valueAsDate = new Date();
+
+    function addPlayer() {
+      const input = document.getElementById("name");
+      if (!input.value) return;
+
+      players.push({
+        name: input.value,
+        wins: 0,
+        eights: 0
+      });
+
+      input.value = "";
+      render();
+    }
+
+    function addWin(index) {
+      players[index].wins++;
+      render();
+    }
+
+    function removeWin(index) {
+      if (players[index].wins > 0) {
+        players[index].wins--;
+        render();
+      }
+    }
+
+    function updateEight(index, value) {
+      players[index].eights = value;
+    }
+
+    function render() {
+      const container = document.getElementById("players");
+      container.innerHTML = "";
+
+      players.forEach((p, i) => {
+        container.innerHTML += `
+          <div style="
+            border:1px solid #444;
+            padding:15px;
+            margin-bottom:10px;
+            border-radius:5px;
+          ">
+
+            <div style="font-size:18px; margin-bottom:5px;">
+              <b>${p.name}</b>
+            </div>
+
+            <div style="margin-bottom:10px;">
+              Wins: ${p.wins}
+            </div>
+
+            <div style="display:flex; gap:5px; margin-bottom:10px;">
+              <button onclick="addWin(${i})" style="padding:8px;">+ Win</button>
+              <button onclick="removeWin(${i})" style="padding:8px; background:#aa3333; color:white;">- Win</button>
+            </div>
+
+            <div>
+              8 Snap:
+              <select onchange="updateEight(${i}, this.value)">
+                ${[0,1,2,3,4,5,6,7,8,9].map(n => `
+                  <option value="${n}" ${p.eights == n ? "selected" : ""}>${n}</option>
+                `).join("")}
+              </select>
+            </div>
+
+          </div>
+        `;
+      });
+    }
+
+    function sendText() {
+      const date = document.getElementById("gameDate").value;
+
+      let text = "Game Date: " + date + "\\n\\n";
+
+      text += players.map(p => 
+        `${p.name} - ${p.wins} wins | 8 Snap: ${p.eights}`
+      ).join("\\n");
+
+      window.location.href = `sms:+18608161642?body=${encodeURIComponent(text)}`;
+    }
+  </script>
+
+</body>
+</html>
+``
