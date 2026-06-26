@@ -18,6 +18,16 @@
 
   <h2 style="text-align:center;">Pool League Score Tracker</h2>
 
+  <!-- MATCH FORMAT -->
+  <div style="margin-bottom:15px;">
+    <label>Match Format:</label>
+    <select id="format" style="width:100%; padding:10px; margin-top:5px;">
+      <option>8 Ball</option>
+      <option>9 Ball</option>
+      <option>10 Ball Pro</option>
+    </select>
+  </div>
+
   <!-- DATE -->
   <div style="margin-bottom:15px;">
     <label>Game Date:</label>
@@ -76,7 +86,6 @@
 
       input.value = "";
 
-      // Change placeholder after first player
       if (players.length === 1) {
         input.placeholder = "Opponent";
       }
@@ -163,8 +172,10 @@
 
     function sendText() {
       const date = document.getElementById("gameDate").value;
+      const format = document.getElementById("format").value;
 
-      let text = "Game Date: " + date + "\\n\\n";
+      let text = "Format: " + format + "\\n";
+      text += "Game Date: " + date + "\\n\\n";
 
       text += players.map(p => 
         `${p.name} - Wins: ${p.wins} | 8 Snap: ${p.eights} | Table Run: ${p.tableRuns} | 9 Snap: ${p.nineSnaps} | 3 Foul: ${p.threeFouls}`
