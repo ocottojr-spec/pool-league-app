@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Connecticut Cue Sports Tracker</title>
+</head>
+
+<body style="
+  font-family: Arial;
+  padding: 15px;
+  max-width: 500px;
+  margin: auto;
+  background-color: #111;
+  color: white;
+">
+
+  <!-- ✅ LOGO HEADER -->
+  <div style="text-align:center; margin-bottom:10px;">
+    <img 
+      src="logo.png" 
+      alt="Connecticut Cue Sports"
+      style="width:100%; max-width:300px;"
+    />
+  </div>
+
+  <h2 style="text-align:center; margin-bottom:20px;">
+    Pool League Score Tracker
+  </h2>
+
+  <!-- ✅ INPUT AREA -->
+  <div style="display:flex; gap:10px; margin-bottom:15px;">
+    <input 
+      id="name" 
+      placeholder="Player name"
+      style="
+        flex:1;
+        padding:12px;
+        font-size:16px;
+        border-radius:5px;
+        border:none;
+      "
+    />
+    <button 
+      onclick="addPlayer()"
+      style="
+        padding:12px;
+        font-size:16px;
+        border:none;
+        border-radius:5px;
+      "
+    >
+      Add
+    </button>
+  </div>
+
+  <div id="players"></div>
+
+  <!-- ✅ SEND BUTTON -->
+  <button 
+    onclick="sendText()"
+    style="
+      margin-top:20px;
+      width:100%;
+      padding:15px;
+      font-size:18px;
+      background-color:#c9a641;
+      color:black;
+      border:none;
+      border-radius:5px;
