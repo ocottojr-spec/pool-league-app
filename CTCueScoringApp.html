@@ -21,7 +21,7 @@
   <!-- MATCH FORMAT -->
   <div style="margin-bottom:15px;">
     <label>Match Format:</label>
-    <select id="format" style="width:100%; padding:10px; margin-top:5px;">
+    <select id="format" style="width:100%; padding:10px;">
       <option>8 Ball</option>
       <option>9 Ball</option>
       <option>10 Ball Pro</option>
@@ -31,7 +31,7 @@
   <!-- DATE -->
   <div style="margin-bottom:15px;">
     <label>Game Date:</label>
-    <input type="date" id="gameDate" style="width:100%; padding:10px; margin-top:5px;">
+    <input type="date" id="gameDate" style="width:100%; padding:10px;">
   </div>
 
   <!-- ADD PLAYER -->
@@ -48,7 +48,7 @@
 
   <div id="players"></div>
 
-  <!-- SEND BUTTON -->
+  <!-- SEND -->
   <button 
     onclick="sendText()"
     style="
@@ -124,45 +124,64 @@
           <div style="
             border:1px solid #444;
             padding:15px;
-            margin-bottom:10px;
+            margin-bottom:15px;
             border-radius:5px;
           ">
 
-            <div style="font-size:18px; margin-bottom:5px;">
+            <div style="font-size:18px; margin-bottom:10px; text-align:center;">
               <b>${p.name}</b>
             </div>
 
-            <div style="margin-bottom:10px;">
-              Wins: ${p.wins}
+            <!-- WINS ROW -->
+            <div style="
+              display:flex;
+              justify-content:space-between;
+              align-items:center;
+              margin-bottom:10px;
+            ">
+              <div>Wins: ${p.wins}</div>
+
+              <div style="display:flex; gap:5px;">
+                <button onclick="addWin(${i})">+ Win</button>
+                <button onclick="removeWin(${i})" style="background:#aa3333; color:white;">- Win</button>
+              </div>
             </div>
 
-            <div style="display:flex; gap:5px; margin-bottom:10px;">
-              <button onclick="addWin(${i})">+ Win</button>
-              <button onclick="removeWin(${i})" style="background:#aa3333; color:white;">- Win</button>
-            </div>
+            <!-- STATS GRID -->
+            <div style="
+              display:grid;
+              grid-template-columns: 1fr 1fr;
+              gap:10px;
+            ">
 
-            <div>8 Snap:
-              <select onchange="updateStat(${i}, 'eights', this.value)">
-                ${dropdownOptions(p.eights)}
-              </select>
-            </div>
+              <div>
+                8 Snap:
+                <select onchange="updateStat(${i}, 'eights', this.value)">
+                  ${dropdownOptions(p.eights)}
+                </select>
+              </div>
 
-            <div>Table Run:
-              <select onchange="updateStat(${i}, 'tableRuns', this.value)">
-                ${dropdownOptions(p.tableRuns)}
-              </select>
-            </div>
+              <div>
+                Table Run:
+                <select onchange="updateStat(${i}, 'tableRuns', this.value)">
+                  ${dropdownOptions(p.tableRuns)}
+                </select>
+              </div>
 
-            <div>9 Snap:
-              <select onchange="updateStat(${i}, 'nineSnaps', this.value)">
-                ${dropdownOptions(p.nineSnaps)}
-              </select>
-            </div>
+              <div>
+                9 Snap:
+                <select onchange="updateStat(${i}, 'nineSnaps', this.value)">
+                  ${dropdownOptions(p.nineSnaps)}
+                </select>
+              </div>
 
-            <div>3 Foul:
-              <select onchange="updateStat(${i}, 'threeFouls', this.value)">
-                ${dropdownOptions(p.threeFouls)}
-              </select>
+              <div>
+                3 Foul:
+                <select onchange="updateStat(${i}, 'threeFouls', this.value)">
+                  ${dropdownOptions(p.threeFouls)}
+                </select>
+              </div>
+
             </div>
 
           </div>
@@ -178,7 +197,7 @@
       text += "Game Date: " + date + "\\n\\n";
 
       text += players.map(p => 
-        `${p.name} - Wins: ${p.wins} | 8 Snap: ${p.eights} | Table Run: ${p.tableRuns} | 9 Snap: ${p.nineSnaps} | 3 Foul: ${p.threeFouls}`
+        `${p.name} - Wins: ${p.wins} | 8: ${p.eights} | TR: ${p.tableRuns} | 9: ${p.nineSnaps} | 3F: ${p.threeFouls}`
       ).join("\\n");
 
       window.location.href = `sms:+18608161642?body=${encodeURIComponent(text)}`;
