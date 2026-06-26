@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CACHE FIX -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <title>Connecticut Cue Sports Tracker</title>
+</head>
+
+<body style="
+  font-family: Arial;
+  padding: 15px;
+  max-width: 500px;
+  margin: auto;
+  background-color: #007FFF;
+  color: white;
+">
+
+  <!-- ✅ WATERMARK (LOGO BACKGROUND) -->
+  <div style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('logo.png') center/300px no-repeat;
+    opacity: 0.08;
+    pointer-events: none;
+    z-index: 0;
+  "></div>
+
+  <!-- ✅ MAIN CONTENT -->
+  <div style="position: relative; z-index: 1;">
+
+    <h2 style="text-align:center;">Pool League Score Tracker</h2>
+
+    <!-- MATCH FORMAT -->
+    <div style="margin-bottom:15px;">
+      <label>Match Format:</label>
+      <select id="format" style="width:100%; padding:10px;">
+        <option>8 Ball</option>
+        <option>9 Ball</option>
+        <option>10 Ball Pro</option>
+      </select>
+    </div>
+
+    <!-- DATE -->
+    <div style="margin-bottom:15px;">
+      <label>Game Date:</label>
+      <input type="date" id="gameDate" style="width:100%; padding:10px;">
+    </div>
+
+    <!-- ADD PLAYER -->
+    <div style="display:flex; gap:10px; margin-bottom:15px;">
+      <input id="name" placeholder="Lag Winner" style="flex:1; padding:12px; font-size:16px;" />
+      <button onclick="addPlayer()" style="
+        padding:12px;
+        background-color:#0047AB;
+        color:white;
+        border:none;
+        border-radius:5px;
+      ">
+        Add
+      </button>
+    </div>
+
+    <div id="players"></div>
+
+    <!-- SEND -->
+    <button onclick="sendText()" style="
+        margin-top:20px;
+        width:100%;
+        padding:15px;
+        font-size:18px;
+        background-color:white;
+        color:#007FFF;
+        border:none;
+        border-radius:5px;
+        font-weight:bold;
+    ">
+      Send Scores via Text
+    </button>
+
+  </div>
+
+  <script>
+    let players = [];
+
+    document.getElementById("gameDate").valueAsDate = new Date();
+
+    function addPlayer() {
+      const input = document.getElementById("name");
+      if (!input.value) return;
+
+      players.push({
+        name: input.value,
+        wins: 0,
+        eights: 0,
+        tableRuns: 0,
+        nineSnaps: 0,
+        threeFouls: 0
+      });
+
+      input.value = "";
+
+      if (players.length === 1) {
+        input.placeholder = "Opponent";
+      }
+
+      render();
+    }
+
+    function addWin(index) {
+      players[index].wins++;
+      render();
+    }
+
+    function removeWin(index) {
+      if (players[index].wins > 0) {
+        players[index].wins--;
+        render();
+      }
+    }
+
+    function updateStat(index, field, value) {
+      players[index][field] = value;
+    }
+
+    function dropdownOptions(selectedValue) {
+      return [0,1,2,3,4,5,6,7,8,9].map(n => `
+        <option value="${n}" ${n == selectedValue ? "selected" : ""}>${n}</option>
+      `).join("");
+    }
+
+    function render() {
+      const container = document.getElementById("players");
+      container.innerHTML = "";
+
+      players.forEach((p, i) => {
+        container.innerHTML += `
+          <div style="
+            background-color:white;
+            color:black;
+            padding:15px;
+            margin-bottom:15px;
+            border-radius:8px;
+          ">
+
+            <div style="text-align:center; font-size:18px; margin-bottom:10px;">
+              <b>${p.name}</b>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+              <div>Wins: ${p.wins}</div>
+
+              <div style="display:flex; gap:5px;">
+                <button onclick="removeWin(${i})" style="background:#cc0000; color:white;">- Win</button>
+                <button onclick="addWin(${i})" style="background:#007FFF; color:white;">+ Win</button>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+              <div>8 Snap:
+                <select onchange="updateStat(${i}, 'eights', this.value)">
+                  ${dropdownOptions(p.eights)}
+                </select>
+              </div>
+
+              <div>Table Run:
+                <select onchange="updateStat(${i}, 'tableRuns', this.value)">
+                  ${dropdownOptions(p.tableRuns)}
+                </select>
+              </div>
+
+              <div>9 Snap:
+                <select onchange="updateStat(${i}, 'nineSnaps', this.value)">
+                  ${dropdownOptions(p.nineSnaps)}
+                </select>
+              </div>
+
+              <div>3 Foul:
+                <select onchange="updateStat(${i}, 'threeFouls', this.value)">
+                  ${dropdownOptions(p.threeFouls)}
+                </select>
+              </div>
+            </div>
+
+          </div>
+        `;
+      });
+    }
+
+    function sendText() {
+      const dateRaw = document.getElementById("gameDate").value;
+      const format = document.getElementById("format").value;
+
+      const dateObj = new Date(dateRaw);
+      const date = (dateObj.getMonth() + 1).toString().padStart(2, '0') + "/" +
+                   dateObj.getDate().toString().padStart(2, '0') + "/" +
+                   dateObj.getFullYear();
+
+      let text = "CONNECTICUT CUE SPORTS\n\n";
+
+      text += "Format: " + format + "\n";
+      text += "Date: " + date + "\n\n";
+      text += "========================\n\n";
+
+      players.forEach((p, index) => {
+        const label = index === 0 ? "LAG WINNER" : "OPPONENT";
+
+        text += label + "\n";
+        text += p.name + "\n";
+        text += "Wins: " + p.wins + "\n";
+        text += "8 Snap: " + p.eights + "   TR: " + p.tableRuns + "\n";
+        text += "9 Snap: " + p.nineSnaps + "   3 Foul: " + p.threeFouls + "\n";
+
+        if (index !== players.length - 1) {
+          text += "\n------------------------\n\n";
+        }
+      });
+
+      window.location.href = `sms:+14752828376?body=${encodeURIComponent(text)}`;
+    }
+  </script>
+
+</body>
+</html>
